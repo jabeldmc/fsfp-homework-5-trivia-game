@@ -39,13 +39,19 @@ console.logValue = function( label , value ) {
 }
 
 
-/*** FUNCTION getRqndomNumber()
+/*** OBJECT jdcUtil
 ***/
 
-var getRandomNumber = function( cardinality ) {
-    var result = ( Math.floor( Math.random() * cardinality ) );
-    return result;
+
+var jdcUtil = {
+    
+
+    /*** FUNCTION getRandomNumber()
+    ***/
+    
+    getRandomNumber: function( cardinality ) {
+        var result = ( Math.floor( Math.random() * cardinality ) );
+        return result;
+    }
 }
 
-
-// export { getRandomNumber };
