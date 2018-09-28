@@ -23,17 +23,38 @@ if ( console.logValue ) {
     console.warn( "Overriding existing implementation of `console.logValue()`." );
 }
 console.logValue = function( label , value ) {
-        if ( typeof value === "string" ) {
-            var valueString = ( "\"" + value + "\"" );
+    if ( typeof value === "number" ) {
+        var typeString = ( "[" + ( typeof value ) + "]" );
+        var valueString = value.toString();
+    }
+    else if ( typeof value === "boolean" ) {
+        var typeString = ( "[" + ( typeof value ) + "]" );
+        var valueString = value.toString();
+    }
+    else if ( typeof value === "string" ) {
+        var typeString = ( "[" + ( typeof value ) + "]" );            
+        var valueString = ( "\"" + value + "\"" );
+    }
+    else if ( value === null ) {
+        var typeString = Object.prototype.toString.call( value );
+        var valueString = "null";
+    }
+    else if ( value === undefined ) {
+        var typeString = Object.prototype.toString.call( value );
+        var valueString = "undefined";;
+    }
+    else {
+        var typeString = Object.prototype.toString.call( value );
+        if ( typeString === "[object Object]" ) {
+            typeString = "[object " + value.constructor.name + "]"
         }
-        else {
-            var valueString = value;
-            // var valueString = console.log( JSON.parse( JSON.stringify( value ) ) );
-
-        }
+        var valueString = value;
+        // var valueString = JSON.parse( JSON.stringify( value ) );
+    }
     console.log(
-        Object.prototype.toString.call( value ) ,
+        typeString ,
         label ,
+        ":" ,
         valueString
     );
 }
