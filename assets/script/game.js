@@ -85,7 +85,7 @@ var GAME_MESSAGE__INITIALIZED = function() {
 };
 
 var GAME_MESSAGE__PROMPT_START = function() {
-    this.header = "ようこそ！ (Youkoso!)";
+    this.header = "ようこそ！ Welcome!";
     this.body0 = "How is your Japanese vocabulary? Choose the correct translation!";
     this.body1 = "Click HERE to start!"
 }
@@ -98,7 +98,7 @@ var GAME_MESSAGE__MESSAGE_GET_READY = function() {
 
 var GAME_MESSAGE__PROMPT_QUESTION = function( questionNumber , jpWord ) {
     this.header =
-        "Question Number $QUESTION_NUMBER"
+        "Question $QUESTION_NUMBER"
             .replace( "$QUESTION_NUMBER" , questionNumber.toString() );
     this.body0 = jpWord;
     this.body1 = "";
@@ -108,31 +108,31 @@ var GAME_MESSAGE__MESSAGE_QUESTION_TIMEOUT = function( jpWord , enWord ) {
     this.header = "Time Out";
     this.body0 = "Time ran out. Too bad!";
     this.body1 =
-        "\"$JP_WORD\" means \"$EN_WORD\"."
+        "$JP_WORD means \"$EN_WORD\"."
             .replace( "$JP_WORD" , jpWord )
-            .replace( "$EN_WORD" , enWord );
+            .replace( "$EN_WORD" , enWord.toLowerCase() );
 }
 
 var GAME_MESSAGE__MESSAGE_GOOD_ANSWER = function( jpWord , enWord ) {
-    this.header = "Correct!";
+    this.header = "Correct";
     this.body0 =
-        "\"$JP_WORD\" means \"$EN_WORD\"!"
+        "$JP_WORD means \"$EN_WORD\"."
             .replace( "$JP_WORD" , jpWord )
-            .replace( "$EN_WORD" , enWord );
+            .replace( "$EN_WORD" , enWord.toLowerCase() );
     this.body1 = "Good job!";
 }
 
 var GAME_MESSAGE__MESSAGE_BAD_ANSWER = function( jpWord , enWord ) {
     this.header = "Incorrect";
-    this.body1 = "Wrong aswer. Too bad!";
-    this.body0 =
-        "\"$JP_WORD\" means \"$EN_WORD\"."
+    this.body0 = "Wrong aswer. Too bad!";
+    this.body1 =
+        "$JP_WORD means \"$EN_WORD\"."
             .replace( "$JP_WORD" , jpWord )
-            .replace( "$EN_WORD" , enWord );
+            .replace( "$EN_WORD" , enWord.toLowerCase() );
 }
 
 var GAME_MESSAGE__MESSAGE_GAME_OVER = function( score ) {
-    this.header = "Game Over";
+    this.header = "Finish!";
     this.body0 =
         "Your final score is $SCORE."
             .replace( "$SCORE" , score );
@@ -163,9 +163,9 @@ var Game = function() {
     this.status = GAME_STATUS__INITIALIZED;
     this.message = new GAME_MESSAGE__INITIALIZED();
     this.trivias = [
-        new Trivia( "りんご (ringo)" , "apple" , "orange" , "watermelon" , 0 ) ,
-        new Trivia( "オレンジ (orenji)" , "apple" , "orange" , "watermelon" , 1 ) ,
-        new Trivia( "スイカ (suika)" , "apple" , "orange" , "watermelon" , 2 ) ,
+        new Trivia( "りんご (ringo)" , "Apple" , "Orange" , "Watermelon" , 0 ) ,
+        new Trivia( "オレンジ (orenji)" , "Apple" , "Orange" , "Watermelon" , 1 ) ,
+        new Trivia( "スイカ (suika)" , "Apple" , "Orange" , "Watermelon" , 2 ) ,
     ];
     this.triviaIndex = undefined;
     this.timer = undefined;

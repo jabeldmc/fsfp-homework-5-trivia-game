@@ -4,8 +4,10 @@
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <title>Trivia Game</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <!-- Title -->
+    <title>Trivia Game: Japanese Vocabulary</title>
 
     <!-- jQuery -->
     <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous" defer></script> -->
@@ -33,31 +35,148 @@
 </head>
 
 <body>
-    <p id="placeholder">Work in Progress: Expecting to finish Thursday, September 27, 2018</p>
 
+    <!--
     <div id="game-message">
         <h1>Message</h1>
         <p id="game-message-header">game-message-header</p>
-        <p id="game-message-body-0">game-message-body0</p>
-        <p id="game-message-body-1">game-message-body1</p>
+        <p id="game-message-body-0">game-message-body-0</p>
+        <p id="game-message-body-1">game-message-body-1</p>
     </div>
+    -->
 
+    <!--
     <div id="game-trivia">
         <h1>Answers</h1>
-        <p id="game-trivia-answer-0">game-trivia-answer0</p>
-        <p id="game-trivia-answer-1">game-trivia-answer1</p>
-        <p id="game-trivia-answer-2">game-trivia-answer2</p>
+        <p id="game-trivia-answer-0">game-trivia-answer-0</p>
+        <p id="game-trivia-answer-1">game-trivia-answer-1</p>
+        <p id="game-trivia-answer-2">game-trivia-answer-2</p>
     </div>
+    -->
 
+    <!--
     <h1>Timer</h1>
     <p id="game-timer">game-timer</p>
+    -->
 
+    <!-- 
     <h1>Score</h1>
     <p id="game-score">game-score</p>
+    -->
+
+    <!-- Container: Body -->
+    <div id="body" class="container-fluid p-4">
+
+        <!-- Row 1: Game Title -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="jumbotron p-4 mb-0 text-center">
+                    <h1 class="display-3">日本語の語彙</h1>
+                    <p class="lead mb-0">Japanese Vocabulary</p>
+                </div>
+            </div>
+        </div>
+        <!-- Row 1: Game Title -->
+
+        <!-- Row 2: Messages, Timer, Score -->
+        <div class="row mb-4">
+            <div class="col-8 d-flex align-items-stretch">
+
+                <!-- Message Alert --->
+                <div id="game-message" class="alert alert-info flex-fill p-3 mb-0">
+                    <h5 id="game-message-header" class="mb-2">game-message-header</h5>
+                    <hr class="mt-2 mb-3">
+                    <p id="game-message-body-0" class="mb-2">game-message-body-0</p>
+                    <p id="game-message-body-1" class="mb-0">game-message-body-1</p>
+                </div>
+                <!-- Message Alert --->
+
+            </div>
+            <div class="col-2 d-flex align-items-stretch">
+
+                <!-- Timer Alert -->
+                <div class="alert alert-info flex-fill p-3 mb-0">
+                    <h5 class="mb-2">Timer</h5>
+                    <hr class="mt-2 mb-3">
+                    <p id="game-timer" class="align-self-center mb-0 text-center" style="font-size: 2rem">game-timer</p>
+                </div>
+                <!-- Timer Alert -->
+
+                <!-- Timer Card --->
+                <!--
+                <div class="card flex-fill mb-0">
+                    <div class="card-header text-center lead">Score</div>
+                    <div class="card-body">
+                        <p id="game-timer" class="align-self-center mb-0 text-center" style="font-size: 2rem">game-timer</p>
+                    </div>
+                </div>
+                -->
+                <!-- Timer Card --->
+
+            </div>
+            <div class="col-2 d-flex align-items-stretch">
+
+                <!-- Score Alert -->
+                <div class="alert alert-info flex-fill p-3 mb-0">
+                    <h5 class="mb-2">Score</h5>
+                    <hr class="mt-2 mb-3">
+                    <p id="game-score" class="align-self-center mb-0 text-center" style="font-size: 2rem">game-score</p>
+                </div>
+                <!-- Score Alert -->
+
+                <!-- Score Card --->
+                <!--
+                <div class="card flex-fill mb-0">
+                    <div class="card-header text-center lead">Score</div>
+                    <div class="card-body">
+                        <p id="game-score" class="align-self-center mb-0 text-center" style="font-size: 2rem">game-score</p>
+                    </div>
+                </div>
+                -->
+                <!-- Score Card --->
+
+            </div>
+        </div>
+        <!-- Row 2: Messages, Timer, Score -->
+
+        <!-- Row 3: Trivia Options --->
+        <div class="row mb-4">
+            <div class="col-4 d-flex align-items-stretch">
+
+                <!-- Answer 0 Alert -->
+                <div class="alert alert-info flex-fill p-3 mb-0">
+                    <p id="game-trivia-answer-0" class="align-self-center mb-0 text-center" style="font-size: 2rem">game-trivia-answer-0</p>
+                </div>
+                <!-- Answer 0 Alert -->
+
+            </div>
+            <div class="col-4 d-flex align-items-stretch">
+
+                <!-- Answer 0 Alert -->
+                <div class="alert alert-info flex-fill p-3 mb-0">
+                    <p id="game-trivia-answer-1" class="align-self-center mb-0 text-center" style="font-size: 2rem">game-trivia-answer-1</p>
+                </div>
+                <!-- Answer 0 Alert -->
+
+            </div>
+            <div class="col-4 d-flex align-items-stretch">
+
+                <!-- Answer 0 Alert -->
+                <div class="alert alert-info flex-fill p-3 mb-0">
+                    <p id="game-trivia-answer-2" class="align-self-center mb-0 text-center" style="font-size: 2rem">game-trivia-answer-2</p>
+                </div>
+                <!-- Answer 0 Alert -->
+
+            </div>
+        </div>
+        <!-- Row 3: Trivia Options --->
+
+    </div>
+    <!-- Container: Body -->
 
     <!-- Internal Javascript -->
     <!-- <script> -->
-    <!-- </script>     -->
+    <!-- </script> -->
 </body>
 
 </html>

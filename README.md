@@ -1,22 +1,33 @@
-# fsfp-homework-5-trivia-game
+# Full Stack Flex Program Homework 05: Trivia Game
 
-Full Stack Flex Program Homework 05: Trivia Game
+A trivia game built using HTML5, Bootstrap, and JQuery.
+
+The questions and optional answers are such to make the game a Japanese
+vocabulary review.
 
 
 # Portfolio
 
-Game is available in the [responsive](https://jabeldmc.github.io/fsfp-homework-2-responsive-portfolio/portfolio.html) and [Bootstrap](https://jabeldmc.github.io/fsfp-homework-2-bootstrap-portfolio/portfolio.html) portfolio.
+Game is available in the
+[responsive](https://jabeldmc.github.io/fsfp-homework-2-responsive-portfolio/portfolio.html)
+and
+[Bootstrap](https://jabeldmc.github.io/fsfp-homework-2-bootstrap-portfolio/portfolio.html)
+portfolio.
 
 
 # Technical Details
 
-Game flow is implemented via a Finite State Automaton (FSA). The FSA decides
-what to do next based on the following:
+Game flow is implemented with a Finite State Automaton (FSA). On each "step",
+the FSA decides what to do next based on the following:
 
 * Game status
 * Event type (given by event handler callback function)
 * Event target (given by event handler callback function)
 * Game timer (for timeout events)
+
+After every user interaction, the FSA's main loop repeats "steps" until no
+criteria is met to continue, or the loop is interrupted by the flag
+`FSA_CONTINUE__NO`.
 
 
 ## Variables and Functions
@@ -39,14 +50,19 @@ methods in objects of type `Game`.
 
 Function `fsaStep()` implements one step of the FSA.
 
-Function `fsaMain()` loops FSA steps until no condition is met to move the FSA
-forward, or is interrupted by the flag `FSA_CONTINUE__NO`;
+Function `fsaMain()` is the main FSA loop.
 
 Variables `FSA_CONTINUE__NO` and `FSA_CONTINUE__YES` determine if the FSA loop
 should stop or continue.
 
 
 # History
+
+
+## Build 3
+
+* Finished UI using Bootstrap.
+* Tweaks on messages.
 
 
 ## Build 2
