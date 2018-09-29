@@ -182,28 +182,55 @@ var Game = function() {
 updateUIMessage = function() {
     console.group( "FUNCTION updateUIMessage()" );
 
-    // update "#game-message-header"
-    if ( game.message.header === "" ) {
-        $( "#game-message-header" ).html( "&nbsp;" );
+    // update "#game-message"
+    var gameMessageJQ = $( "#game-message" );
+    if (
+        ( game.status === GAME_STATUS__PROMPT_START__WAIT_USER ) ||
+        ( game.status === GAME_STATUS__MESSAGE_GAME_OVER__WAIT_USER )
+    ) {
+        gameMessageJQ.css( "cursor" , "pointer" );
     }
     else {
-        $( "#game-message-header" ).text( game.message.header );
+        gameMessageJQ.css( "cursor" , "" );        
+    }
+
+    // update "#game-message-header"
+    var gameMessageHeaderJQ = $( "#game-message-header" );
+    if ( game.message.header === "" ) {
+        gameMessageHeaderJQ.html( "&nbsp;" );
+    }
+    else {
+        gameMessageHeaderJQ.text( game.message.header );
     }
 
     // update "#game-message-body-0"
+    var gameMessageBody0JQ = $( "#game-message-body-0" );
     if ( game.message.body0 === "" ) {
-        $( "#game-message-body-0" ).html( "&nbsp;" );
+        gameMessageBody0JQ.html( "&nbsp;" );
     }
     else {
-        $( "#game-message-body-0" ).text( game.message.body0 );
+        gameMessageBody0JQ.text( game.message.body0 );
+    }
+
+    if ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) {
+        gameMessageBody0JQ.css( "font-size" , "2rem" );
+    } else {
+        gameMessageBody0JQ.css( "font-size" , "16px" );
     }
 
     // update "#game-message-body-1"
+    var gameMessageBody1JQ = $( "#game-message-body-1" );
     if ( game.message.body1 === "" ) {
-        $( "#game-message-body-1" ).html( "&nbsp;" );
+        gameMessageBody1JQ.html( "&nbsp;" );
     }
     else {
-        $( "#game-message-body-1" ).text( game.message.body1 );
+        gameMessageBody1JQ.text( game.message.body1 );
+    }
+
+    if ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) {
+        gameMessageBody1JQ.addClass( "d-none" );
+    } else {
+        gameMessageBody1JQ.removeClass( "d-none" );
     }
 
     console.groupEnd();
@@ -216,15 +243,37 @@ updateUIMessage = function() {
 updateUITrivia = function() {
     console.group( "FUNCTION updateUITrivia()" );
 
-    if ( game.triviaIndex === undefined ) {
-        $( "#game-trivia-answer-0" ).html( "&nbsp;" );
-        $( "#game-trivia-answer-1" ).html( "&nbsp;" );
-        $( "#game-trivia-answer-2" ).html( "&nbsp;" );
+    // update #game-trivia-answer-0
+    var gameTriviaAnswer0JQ = $( "#game-trivia-answer-0" );
+    if ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) {
+        gameTriviaAnswer0JQ.css( "display" , "block" );
+        gameTriviaAnswer0JQ.text( game.trivias[ game.triviaIndex ].answers[ 0 ] );
     }
     else {
-        $( "#game-trivia-answer-0" ).text( game.trivias[ game.triviaIndex ].answers[ 0 ] );
-        $( "#game-trivia-answer-1" ).text( game.trivias[ game.triviaIndex ].answers[ 1 ] );
-        $( "#game-trivia-answer-2" ).text( game.trivias[ game.triviaIndex ].answers[ 2 ] );
+        gameTriviaAnswer0JQ.css( "display" , "none" );
+        gameTriviaAnswer0JQ.html( "&nbsp;" );
+    }
+
+    // update @game-trivia-answer-1
+    var gameTriviaAnswer1JQ =  $( "#game-trivia-answer-1" );
+    if ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) {
+        gameTriviaAnswer1JQ.css( "display" , "block" );
+        gameTriviaAnswer1JQ.text( game.trivias[ game.triviaIndex ].answers[ 1 ] );
+    }
+    else {
+        gameTriviaAnswer1JQ.css( "display" , "none" );
+        gameTriviaAnswer1JQ.html( "&nbsp;" );
+    }
+
+    // update #game-trivia-answer-2
+    var gameTriviaAnswer2JQ = $( "#game-trivia-answer-2" );
+    if ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) {
+        gameTriviaAnswer2JQ.css( "display" , "block" );
+        gameTriviaAnswer2JQ.text( game.trivias[ game.triviaIndex ].answers[ 2 ] );
+    }
+    else {
+        gameTriviaAnswer2JQ.css( "display" , "none" );
+        gameTriviaAnswer2JQ.html( "&nbsp;" );
     }
 
     console.groupEnd();
@@ -237,11 +286,36 @@ updateUITrivia = function() {
 updateUITimer = function() {
     console.group( "FUNCTION updateUITimer()" );
 
-    if ( game.timer === undefined ) {
-        $( "#game-timer" ).html( "&nbsp;" );
+    // update "#game-timer"
+    var gameTimerJQ = $( "#game-timer" );
+    gameTimerJQ.removeClass( "alert-primary alert-warning alert-danger" );
+    if (
+        ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) &&
+        ( game.timer === 1 )
+    ) {
+        gameTimerJQ.addClass( "alert-danger" );
+    }
+    else if (
+        ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) &&
+        (
+            ( game.timer === 2 ) ||
+            ( game.timer === 3 )
+        )
+    ) {
+        gameTimerJQ.addClass( "alert-warning" );
     }
     else {
-        $( "#game-timer" ).text( game.timer.toString() );
+        gameTimerJQ.addClass( "alert-primary" );
+        
+    }
+
+    // update #game-timer-value
+    var gameTimerValueJQ = $( "#game-timer-value" );
+    if ( game.timer === undefined ) {
+        gameTimerValueJQ.html( "&nbsp;" );
+    }
+    else {
+        gameTimerValueJQ.text( game.timer.toString() );
     }
 
     console.groupEnd();
@@ -254,11 +328,13 @@ updateUITimer = function() {
 updateUIScore = function() {
     console.group( "FUNCTION updateUIScore()" );
 
+    // update #game-score-value
+    var gameScoreValueJQ = $( "#game-score-value" );
     if ( game.score === undefined ) {
-        $( "#game-score" ).html( "&nbsp;" );
+        gameScoreValueJQ.html( "&nbsp;" );
     }
     else {
-        $( "#game-score" ).text( game.score.toString() );
+        gameScoreValueJQ.text( game.score.toString() );
     }
 
     console.groupEnd();

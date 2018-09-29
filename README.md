@@ -59,6 +59,11 @@ should stop or continue.
 # History
 
 
+## Build 4
+
+* Added dynamic CSS using JQuery and Bootstrap CSS classes.
+
+
 ## Build 3
 
 * Finished UI using Bootstrap.

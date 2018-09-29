@@ -36,34 +36,6 @@
 
 <body>
 
-    <!--
-    <div id="game-message">
-        <h1>Message</h1>
-        <p id="game-message-header">game-message-header</p>
-        <p id="game-message-body-0">game-message-body-0</p>
-        <p id="game-message-body-1">game-message-body-1</p>
-    </div>
-    -->
-
-    <!--
-    <div id="game-trivia">
-        <h1>Answers</h1>
-        <p id="game-trivia-answer-0">game-trivia-answer-0</p>
-        <p id="game-trivia-answer-1">game-trivia-answer-1</p>
-        <p id="game-trivia-answer-2">game-trivia-answer-2</p>
-    </div>
-    -->
-
-    <!--
-    <h1>Timer</h1>
-    <p id="game-timer">game-timer</p>
-    -->
-
-    <!-- 
-    <h1>Score</h1>
-    <p id="game-score">game-score</p>
-    -->
-
     <!-- Container: Body -->
     <div id="body" class="container-fluid p-4">
 
@@ -83,7 +55,7 @@
             <div class="col-8 d-flex align-items-stretch">
 
                 <!-- Message Alert --->
-                <div id="game-message" class="alert alert-info flex-fill p-3 mb-0">
+                <div id="game-message" class="alert alert-primary flex-fill p-3 mb-0">
                     <h5 id="game-message-header" class="mb-2">game-message-header</h5>
                     <hr class="mt-2 mb-3">
                     <p id="game-message-body-0" class="mb-2">game-message-body-0</p>
@@ -95,10 +67,10 @@
             <div class="col-2 d-flex align-items-stretch">
 
                 <!-- Timer Alert -->
-                <div class="alert alert-info flex-fill p-3 mb-0">
+                <div id="game-timer" class="alert alert-primary flex-fill p-3 mb-0">
                     <h5 class="mb-2">Timer</h5>
                     <hr class="mt-2 mb-3">
-                    <p id="game-timer" class="align-self-center mb-0 text-center" style="font-size: 2rem">game-timer</p>
+                    <p id="game-timer-value" class="align-self-center mb-0 text-center" style="font-size: 2rem">game-timer-value</p>
                 </div>
                 <!-- Timer Alert -->
 
@@ -117,10 +89,10 @@
             <div class="col-2 d-flex align-items-stretch">
 
                 <!-- Score Alert -->
-                <div class="alert alert-info flex-fill p-3 mb-0">
+                <div id="game-score" class="alert alert-primary flex-fill p-3 mb-0">
                     <h5 class="mb-2">Score</h5>
                     <hr class="mt-2 mb-3">
-                    <p id="game-score" class="align-self-center mb-0 text-center" style="font-size: 2rem">game-score</p>
+                    <p id="game-score-value" class="align-self-center mb-0 text-center" style="font-size: 2rem">game-score-value</p>
                 </div>
                 <!-- Score Alert -->
 
@@ -143,28 +115,46 @@
         <div class="row mb-4">
             <div class="col-4 d-flex align-items-stretch">
 
+                <!-- Answer 0 Button -->
+                <button id="game-trivia-answer-0" type="button" class="btn btn-lg btn-block btn-primary">game-trivia-answer-0</button>
+                <!-- Answer 0 Button -->
+
                 <!-- Answer 0 Alert -->
-                <div class="alert alert-info flex-fill p-3 mb-0">
-                    <p id="game-trivia-answer-0" class="align-self-center mb-0 text-center" style="font-size: 2rem">game-trivia-answer-0</p>
+                <!--
+                <div id="game-trivia-answer-0" class="alert alert-primary flex-fill p-3 mb-0">
+                    <p id="game-trivia-answer-0-value" class="align-self-center mb-0 text-center" style="font-size: 2rem">game-trivia-answer-0-value</p>
                 </div>
+                -->
                 <!-- Answer 0 Alert -->
 
             </div>
             <div class="col-4 d-flex align-items-stretch">
 
+                <!-- Answer 1 Button -->
+                <button id="game-trivia-answer-1" type="button" class="btn btn-lg btn-block btn-primary">game-trivia-answer-1</button>
+                <!-- Answer 1 Button -->
+
                 <!-- Answer 0 Alert -->
-                <div class="alert alert-info flex-fill p-3 mb-0">
-                    <p id="game-trivia-answer-1" class="align-self-center mb-0 text-center" style="font-size: 2rem">game-trivia-answer-1</p>
+                <!--
+                <div id="game-trivia-answer-1" class="alert alert-primary flex-fill p-3 mb-0">
+                    <p id="game-trivia-answer-1-value" class="align-self-center mb-0 text-center" style="font-size: 2rem">game-trivia-answer-1-value</p>
                 </div>
+                -->
                 <!-- Answer 0 Alert -->
 
             </div>
             <div class="col-4 d-flex align-items-stretch">
 
+                <!-- Answer 2 Button -->
+                <button id="game-trivia-answer-2" type="button" class="btn btn-lg btn-block btn-primary">game-trivia-answer-2</button>
+                <!-- Answer 2 Button -->
+                
                 <!-- Answer 0 Alert -->
-                <div class="alert alert-info flex-fill p-3 mb-0">
-                    <p id="game-trivia-answer-2" class="align-self-center mb-0 text-center" style="font-size: 2rem">game-trivia-answer-2</p>
+                <!--
+                <div id="game-trivia-answer-2" class="alert alert-primary flex-fill p-3 mb-0">
+                    <p id="game-trivia-answer-2-value" class="align-self-center mb-0 text-center" style="font-size: 2rem">game-trivia-answer-2-value</p>
                 </div>
+                -->
                 <!-- Answer 0 Alert -->
 
             </div>
