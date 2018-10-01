@@ -25,9 +25,12 @@ the FSA decides what to do next based on the following:
 * Event target (given by event handler callback function)
 * Game timer (for timeout events)
 
-After every user interaction, the FSA's main loop repeats "steps" until no
+After every user interaction, the FSA main loop repeats "steps" until no
 criteria is met to continue, or the loop is interrupted by the flag
 `FSA_CONTINUE__NO`.
+
+UI updates after every FSA step. To do so, the FSA main loop calls the main UI
+function as a callback.
 
 
 ## Variables and Functions
@@ -48,25 +51,43 @@ string replacement.
 Functions with prefix `game` are game actions executed by the FSA. They could be
 methods in objects of type `Game`.
 
-Function `fsaStep()` implements one step of the FSA.
+Function `gameFsaStep()` implements one step of the FSA.
 
-Function `fsaMain()` is the main FSA loop.
+Function `gameFsaMain()` is the main FSA loop.
 
 Variables `FSA_CONTINUE__NO` and `FSA_CONTINUE__YES` determine if the FSA loop
 should stop or continue.
 
 
+# To Do
+
+* Create dark mode.
+* Make UI responsive.
+* Move all game logic into its own module (`TriviaGame.js`).
+
+
 # History
+
+
+## Build 5
+
+* Dynamically generate trivia questions from a question dictionary. Question
+  order, incorrect answers, and order of answers to a question are selected
+  randomly.
+* Separated all game logic from UI logic.
+* Dynamically change background color of messages for correct and incorrect
+  answer (JQuery + Bootstrap CSS classes).
+* Tweaks on messages, UI, and game logic.
 
 
 ## Build 4
 
-* Added dynamic CSS using JQuery and Bootstrap CSS classes.
+* Dynamically change background color of timer (JQuery + Bootstrap CSS classes).
 
 
 ## Build 3
 
-* Finished UI using Bootstrap.
+* Finished UI (Bootstrap).
 * Tweaks on messages.
 
 
@@ -81,6 +102,5 @@ should stop or continue.
 
 ## Build 1
 
-* FSA for game logic is complete up to asking a question and counting time.
-* Updating UI is complete.
-* Very basic HTML layout.
+* Game FSA is complete up to asking a question and counting time.
+* Basic UI (HTML).

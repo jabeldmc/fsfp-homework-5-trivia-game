@@ -71,6 +71,26 @@ var GAME_STATUS__MESSAGE_GAME_OVER__WAIT_USER = 11.1;
 var FSA_CONTINUE__NO = 0;
 var FSA_CONTINUE__YES = 1;
 
+// dictionary of questions and correct answers
+var questions = [
+    { question : "いす (isu)" , answer : "chair" } ,
+    { question : "つくえ (tsukue)" , answer : "desk" } ,
+    { question : "えんぴつ (enpitsu)" , answer : "pencil" } ,
+    { question : "かみ (kami)" , answer : "paper" } ,
+    { question : "ほん (hon)" , answer : "book" } ,
+    { question : "いぬ (inu)" , answer : "dog" } ,
+    { question : "ねこ (neko)" , answer : "cat" } ,
+    { question : "とり (tori)" , answer : "bird" } ,
+    { question : "りんご (ringo)" , answer : "apple" } ,
+    { question : "オレンジ (orenji)" , answer : "orange" } ,
+    { question : "スイカ (suika)" , answer : "watermelon" } ,
+    { question : "ぎゅうにゅう (gyūnyū)" , answer : "milk" } ,
+    { question : "おちゃ (ocha)" , answer : "green tea" } ,
+    { question : "こうちゃ (kōcha)" , answer : "black tea" } ,
+    { question : "たまご (tamago)" , answer : "egg" } ,
+    { question : "さかな (sakana)" , answer : "fish" } ,
+];
+
 // game
 var game;    // [object Game]
 
@@ -96,46 +116,47 @@ var GAME_MESSAGE__MESSAGE_GET_READY = function() {
     this.body1 = "";
 }
 
-var GAME_MESSAGE__PROMPT_QUESTION = function( questionNumber , jpWord ) {
+var GAME_MESSAGE__PROMPT_QUESTION = function( questionNumber , question ) {
     this.header =
         "Question $QUESTION_NUMBER"
             .replace( "$QUESTION_NUMBER" , questionNumber.toString() );
-    this.body0 = jpWord;
+    this.body0 = question;
     this.body1 = "";
 }
 
-var GAME_MESSAGE__MESSAGE_QUESTION_TIMEOUT = function( jpWord , enWord ) {
+var GAME_MESSAGE__MESSAGE_QUESTION_TIMEOUT = function( question , answer ) {
     this.header = "Time Out";
     this.body0 = "Time ran out. Too bad!";
     this.body1 =
         "$JP_WORD means \"$EN_WORD\"."
-            .replace( "$JP_WORD" , jpWord )
-            .replace( "$EN_WORD" , enWord.toLowerCase() );
+            .replace( "$JP_WORD" , question )
+            .replace( "$EN_WORD" , answer );
 }
 
-var GAME_MESSAGE__MESSAGE_GOOD_ANSWER = function( jpWord , enWord ) {
-    this.header = "Correct";
+var GAME_MESSAGE__MESSAGE_GOOD_ANSWER = function( question , answer ) {
+    this.header = "Correct!";
     this.body0 =
         "$JP_WORD means \"$EN_WORD\"."
-            .replace( "$JP_WORD" , jpWord )
-            .replace( "$EN_WORD" , enWord.toLowerCase() );
+            .replace( "$JP_WORD" , question )
+            .replace( "$EN_WORD" , answer );
     this.body1 = "Good job!";
 }
 
-var GAME_MESSAGE__MESSAGE_BAD_ANSWER = function( jpWord , enWord ) {
+var GAME_MESSAGE__MESSAGE_BAD_ANSWER = function( question , answer ) {
     this.header = "Incorrect";
     this.body0 = "Wrong aswer. Too bad!";
     this.body1 =
         "$JP_WORD means \"$EN_WORD\"."
-            .replace( "$JP_WORD" , jpWord )
-            .replace( "$EN_WORD" , enWord.toLowerCase() );
+            .replace( "$JP_WORD" , question )
+            .replace( "$EN_WORD" , answer );
 }
 
-var GAME_MESSAGE__MESSAGE_GAME_OVER = function( score ) {
+var GAME_MESSAGE__MESSAGE_GAME_OVER = function( score , questionCount ) {
     this.header = "Finish!";
     this.body0 =
-        "Your final score is $SCORE."
-            .replace( "$SCORE" , score );
+        "You got $SCORE out of $QUESTION_COUNT words correct."
+            .replace( "$SCORE" , score )
+            .replace( "$QUESTION_COUNT" , questionCount );
     this.body1 = "Click HERE to try again!";
 }
 
@@ -143,14 +164,74 @@ var GAME_MESSAGE__MESSAGE_GAME_OVER = function( score ) {
 /*** CONSTRUCTOR Trivia
 ***/
 
-var Trivia = function( question , answer0 , answer1 , answer2 , correctAnswerIndex ) {
+var Trivia = function( question , answers , correctAnswerIndex ) {
     console.group( "CONSTRUCTOR Trivia" );
 
     this.question = question;
-    this.answers = [ answer0 , answer1 , answer2 ];
+    this.answers = answers;
     this.correctAnswerIndex = correctAnswerIndex;
 
     console.groupEnd();
+}
+
+
+/*** FUNCTION getTrivias()
+***/
+
+var getTrivias = function() {
+    console.group( "getTrivias()" );
+
+    var trivias = [];
+    var questionIndices = jdcUtil.getRandomNumbers( 10 , questions.length , true );
+    // console.logValue( "questionIndices" , questionIndices );
+
+    questionIndices.forEach(
+        ( questionIndex ) => {
+            // console.group( "questionIndices.forEach" );
+            // console.logValue( "questionIndex" , questionIndex );
+
+            // question
+            var question = questions[ questionIndex ].question;
+            // console.logValue( "question" , question );
+            // correct answer (in array)
+            var answers = [ questions[ questionIndex ].answer ];
+            // console.logValue( "answers" , answers );
+
+            // add two incorrect answers
+            // pick three indices, in case one is the same as questionIndex
+            var otherAnswerIndices = jdcUtil.getRandomNumbers( 3 , questions.length , true );
+            // console.logValue( "otherAnswerIndices" , otherAnswerIndices );
+            // remove questionIndex, if found
+            otherAnswerIndices.splice( otherAnswerIndices.indexOf( questionIndex) , 1 );
+            // console.logValue( "otherAnswerIndices" , otherAnswerIndices );
+            // add the first two of answers left
+            answers.push( questions[ otherAnswerIndices[ 0 ] ].answer );
+            answers.push( questions[ otherAnswerIndices[ 1 ] ].answer );
+            // console.logValue( "answers" , answers );
+            // randomize order of answers
+            answerIndices = jdcUtil.getRandomNumbers( answers.length , answers.length , true );
+            // console.logValue( "answerIndices" , answerIndices );
+            // get index of correct answer (originally index 0)
+            var correctAnswerIndex = answerIndices.indexOf( 0 );
+            answers = [
+                answers[ answerIndices[ 0 ] ] ,
+                answers[ answerIndices[ 1 ] ] ,
+                answers[ answerIndices[ 2 ] ]
+            ]
+            // console.logValue( answers );
+
+            // create and add trivia
+            var trivia = new Trivia( question , answers , correctAnswerIndex );
+            // console.logValue( "trivia" , trivia );
+            trivias.push( trivia );
+            // console.logValue( "trivias" , trivias );
+
+            // console.groupEnd();
+        }
+    );
+
+    console.groupEnd();
+    return trivias;
 }
 
 
@@ -162,195 +243,11 @@ var Game = function() {
 
     this.status = GAME_STATUS__INITIALIZED;
     this.message = new GAME_MESSAGE__INITIALIZED();
-    this.trivias = [
-        new Trivia( "りんご (ringo)" , "Apple" , "Orange" , "Watermelon" , 0 ) ,
-        new Trivia( "オレンジ (orenji)" , "Apple" , "Orange" , "Watermelon" , 1 ) ,
-        new Trivia( "スイカ (suika)" , "Apple" , "Orange" , "Watermelon" , 2 ) ,
-    ];
-    this.triviaIndex = undefined;
-    this.timer = undefined;
-    this.timeout = undefined;
+    this.trivias = getTrivias();
+    this.triviaIndex = null;
+    this.timer = null;
+    this.timeout = null;
     this.score = 0;
-
-    console.groupEnd();
-}
-
-
-/*** Update UI/FUNCTION updateUIMessage()
-***/
-
-updateUIMessage = function() {
-    console.group( "FUNCTION updateUIMessage()" );
-
-    // update "#game-message"
-    var gameMessageJQ = $( "#game-message" );
-    if (
-        ( game.status === GAME_STATUS__PROMPT_START__WAIT_USER ) ||
-        ( game.status === GAME_STATUS__MESSAGE_GAME_OVER__WAIT_USER )
-    ) {
-        gameMessageJQ.css( "cursor" , "pointer" );
-    }
-    else {
-        gameMessageJQ.css( "cursor" , "" );        
-    }
-
-    // update "#game-message-header"
-    var gameMessageHeaderJQ = $( "#game-message-header" );
-    if ( game.message.header === "" ) {
-        gameMessageHeaderJQ.html( "&nbsp;" );
-    }
-    else {
-        gameMessageHeaderJQ.text( game.message.header );
-    }
-
-    // update "#game-message-body-0"
-    var gameMessageBody0JQ = $( "#game-message-body-0" );
-    if ( game.message.body0 === "" ) {
-        gameMessageBody0JQ.html( "&nbsp;" );
-    }
-    else {
-        gameMessageBody0JQ.text( game.message.body0 );
-    }
-
-    if ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) {
-        gameMessageBody0JQ.css( "font-size" , "2rem" );
-    } else {
-        gameMessageBody0JQ.css( "font-size" , "16px" );
-    }
-
-    // update "#game-message-body-1"
-    var gameMessageBody1JQ = $( "#game-message-body-1" );
-    if ( game.message.body1 === "" ) {
-        gameMessageBody1JQ.html( "&nbsp;" );
-    }
-    else {
-        gameMessageBody1JQ.text( game.message.body1 );
-    }
-
-    if ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) {
-        gameMessageBody1JQ.addClass( "d-none" );
-    } else {
-        gameMessageBody1JQ.removeClass( "d-none" );
-    }
-
-    console.groupEnd();
-}
-
-
-/*** Update UI/FUNCTION updateUITrivia()
-***/
-
-updateUITrivia = function() {
-    console.group( "FUNCTION updateUITrivia()" );
-
-    // update #game-trivia-answer-0
-    var gameTriviaAnswer0JQ = $( "#game-trivia-answer-0" );
-    if ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) {
-        gameTriviaAnswer0JQ.css( "display" , "block" );
-        gameTriviaAnswer0JQ.text( game.trivias[ game.triviaIndex ].answers[ 0 ] );
-    }
-    else {
-        gameTriviaAnswer0JQ.css( "display" , "none" );
-        gameTriviaAnswer0JQ.html( "&nbsp;" );
-    }
-
-    // update @game-trivia-answer-1
-    var gameTriviaAnswer1JQ =  $( "#game-trivia-answer-1" );
-    if ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) {
-        gameTriviaAnswer1JQ.css( "display" , "block" );
-        gameTriviaAnswer1JQ.text( game.trivias[ game.triviaIndex ].answers[ 1 ] );
-    }
-    else {
-        gameTriviaAnswer1JQ.css( "display" , "none" );
-        gameTriviaAnswer1JQ.html( "&nbsp;" );
-    }
-
-    // update #game-trivia-answer-2
-    var gameTriviaAnswer2JQ = $( "#game-trivia-answer-2" );
-    if ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) {
-        gameTriviaAnswer2JQ.css( "display" , "block" );
-        gameTriviaAnswer2JQ.text( game.trivias[ game.triviaIndex ].answers[ 2 ] );
-    }
-    else {
-        gameTriviaAnswer2JQ.css( "display" , "none" );
-        gameTriviaAnswer2JQ.html( "&nbsp;" );
-    }
-
-    console.groupEnd();
-}
-
-
-/*** Update UI/FUNCTION updateUITimer()
-***/
-
-updateUITimer = function() {
-    console.group( "FUNCTION updateUITimer()" );
-
-    // update "#game-timer"
-    var gameTimerJQ = $( "#game-timer" );
-    gameTimerJQ.removeClass( "alert-primary alert-warning alert-danger" );
-    if (
-        ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) &&
-        ( game.timer === 1 )
-    ) {
-        gameTimerJQ.addClass( "alert-danger" );
-    }
-    else if (
-        ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) &&
-        (
-            ( game.timer === 2 ) ||
-            ( game.timer === 3 )
-        )
-    ) {
-        gameTimerJQ.addClass( "alert-warning" );
-    }
-    else {
-        gameTimerJQ.addClass( "alert-primary" );
-        
-    }
-
-    // update #game-timer-value
-    var gameTimerValueJQ = $( "#game-timer-value" );
-    if ( game.timer === undefined ) {
-        gameTimerValueJQ.html( "&nbsp;" );
-    }
-    else {
-        gameTimerValueJQ.text( game.timer.toString() );
-    }
-
-    console.groupEnd();
-}
-
-
-/*** Update UI/FUNCTION updateUIScore()
-***/
-
-updateUIScore = function() {
-    console.group( "FUNCTION updateUIScore()" );
-
-    // update #game-score-value
-    var gameScoreValueJQ = $( "#game-score-value" );
-    if ( game.score === undefined ) {
-        gameScoreValueJQ.html( "&nbsp;" );
-    }
-    else {
-        gameScoreValueJQ.text( game.score.toString() );
-    }
-
-    console.groupEnd();
-}
-
-
-/*** Update UI/FUNCTION updateUI()
-***/
-
-updateUI = function() {
-    console.group( "FUNCTION updateUI()" );
-
-    updateUIMessage();
-    updateUITimer();
-    updateUITrivia();
-    updateUIScore();
 
     console.groupEnd();
 }
@@ -389,7 +286,7 @@ gameMessageGetReady = function() {
 
 gameStartTimer = function( seconds ) {
     console.group( "gameStartTimer()" );
-    console.logValue( "seconds" , seconds );
+    // console.logValue( "seconds" , seconds );
     // console.logValue( "game" , game );
 
     game.timer = seconds;
@@ -399,6 +296,7 @@ gameStartTimer = function( seconds ) {
             1000
         );
 
+    // console.logValue( "game.timer" , game.timer );
     // console.logValue( "game" , game );
     console.groupEnd();
 }
@@ -409,6 +307,7 @@ gameStartTimer = function( seconds ) {
 
 gameStepTimer = function() {
     console.group( "gameStepTimer()" );
+    // console.logValue( "game.timer" , game.timer );
     // console.logValue( "game" , game );
 
     game.timer--;
@@ -418,6 +317,7 @@ gameStepTimer = function() {
             1000
         );
 
+    // console.logValue( "game.timer" , game.timer );
     // console.logValue( "game" , game );
     console.groupEnd();
 }
@@ -428,11 +328,13 @@ gameStepTimer = function() {
 
 gameEndTimer = function() {
     console.group( "gameEndTimer()" );
+    // console.logValue( "game.timer" , game.timer );
     // console.logValue( "game" , game );
 
-    game.timer = undefined;
+    game.timer = null;
     clearTimeout( game.timeout );
 
+    // console.logValue( "game.timer" , game.timer );
     // console.logValue( "game" , game );
     console.groupEnd();
 }
@@ -443,9 +345,10 @@ gameEndTimer = function() {
 
 gamePromptQuestion = function() {
     console.group( "gamePromptQuestion()" );
+    // console.logValue( "game.triviaIndex" , game.triviaIndex );
     // console.logValue( "game" , game );
 
-    if ( game.triviaIndex === undefined ) {
+    if ( game.triviaIndex === null ) {
         game.triviaIndex = 0;
     }
     else {
@@ -455,6 +358,7 @@ gamePromptQuestion = function() {
     var jpWord = game.trivias[ game.triviaIndex ].question;
     game.message = new GAME_MESSAGE__PROMPT_QUESTION( questionNumber , jpWord );
 
+    // console.logValue( "game.triviaIndex" , game.triviaIndex );
     // console.logValue( "game" , game );
     console.groupEnd();
 }
@@ -468,35 +372,36 @@ gameMessageQuestionTimeout = function() {
     // console.logValue( "game" , game );
 
     var trivia = game.trivias[ game.triviaIndex ];
-    var jpWord = trivia.question;
-    var enWord = trivia.answers[ trivia.correctAnswerIndex ];
-    game.message = new GAME_MESSAGE__MESSAGE_QUESTION_TIMEOUT( jpWord , enWord );
+    var question = trivia.question;
+    var answer = trivia.answers[ trivia.correctAnswerIndex ];
+    game.message = new GAME_MESSAGE__MESSAGE_QUESTION_TIMEOUT( question , answer );
 
     // console.logValue( "game" , game );
     console.groupEnd();
 }
 
 
-/*** Game FSA/FUNCTION gameCheckCorrectAnswer()
+/*** Game FSA/FUNCTION gameIsCorrectAnswer()
 ***/
 
-gameCheckCorrectAnswer = function( answerIndex ) {
-    console.group( "gameCheckCorrectAnswer()" );
+gameIsCorrectAnswer = function( answerIndex ) {
+    console.group( "gameIsCorrectAnswer()" );
     console.logValue( "answerIndex" , answerIndex );
     // console.logValue( "game" , game );
-    
+
     var trivia = game.trivias[ game.triviaIndex ];
-    var checkCorrectAnswer = false;
+    var isCorrectAnswer = false;
     if ( answerIndex === trivia.correctAnswerIndex ) {
         game.score++;
-        checkCorrectAnswer = true;
+        isCorrectAnswer = true;
     }
 
-    console.logValue( "checkCorrectAnswer" , checkCorrectAnswer );
+    console.logValue( "isCorrectAnswer" , isCorrectAnswer );
     // console.logValue( "game" , game );
     console.groupEnd();
-    return checkCorrectAnswer;
+    return isCorrectAnswer;
 }
+
 
 /*** Game FSA/FUNCTION gameMessageGoodAnswer()
 ***/
@@ -504,11 +409,11 @@ gameCheckCorrectAnswer = function( answerIndex ) {
 gameMessageGoodAnswer = function() {
     console.group( "gameMessageGoodAnswer()" );
     // console.logValue( "game" , game );
-    
+
     var trivia = game.trivias[ game.triviaIndex ];
-    var jpWord = trivia.question;
-    var enWord = trivia.answers[ trivia.correctAnswerIndex ];
-    game.message = new GAME_MESSAGE__MESSAGE_GOOD_ANSWER( jpWord , enWord );
+    var question = trivia.question;
+    var answer = trivia.answers[ trivia.correctAnswerIndex ];
+    game.message = new GAME_MESSAGE__MESSAGE_GOOD_ANSWER( question , answer );
 
     // console.logValue( "game" , game );
     console.groupEnd();
@@ -521,11 +426,11 @@ gameMessageGoodAnswer = function() {
 gameMessageBadAnswer = function() {
     console.group( "gameMessageBadAnswer()" );
     // console.logValue( "game" , game );
-    
+
     var trivia = game.trivias[ game.triviaIndex ];
-    var jpWord = trivia.question;
-    var enWord = trivia.answers[ trivia.correctAnswerIndex ];
-    game.message = new GAME_MESSAGE__MESSAGE_BAD_ANSWER( jpWord , enWord );
+    var question = trivia.question;
+    var answer = trivia.answers[ trivia.correctAnswerIndex ];
+    game.message = new GAME_MESSAGE__MESSAGE_BAD_ANSWER( question , answer );
 
     // console.logValue( "game" , game );
     console.groupEnd();
@@ -539,16 +444,16 @@ gameCheckMoreQuestions = function() {
     console.group( "gameCheckMoreQuestions()" );
     // console.logValue( "game" , game );
 
-    var checkMoreQuestions = false;
+    var flagMoreQuestions = false;
 
     if ( game.triviaIndex < ( game.trivias.length - 1 ) ) {
-        checkMoreQuestions = true;
+        flagMoreQuestions = true;
     }
-   
-    console.logValue( "checkMoreQuestions" , checkMoreQuestions );
+
+    console.logValue( "flagMoreQuestions" , flagMoreQuestions );
     // console.logValue( "game" , game );
     console.groupEnd();
-    return checkMoreQuestions;
+    return flagMoreQuestions;
 }
 
 
@@ -560,40 +465,46 @@ gameMessageGameOver = function( score ) {
     console.logValue( "score" , score );
     // console.logValue( "game" , game );
 
-    game.message = new GAME_MESSAGE__MESSAGE_GAME_OVER( score );
+    game.message = new GAME_MESSAGE__MESSAGE_GAME_OVER( score , game.trivias.length );
 
     // console.logValue( "game" , game );
     console.groupEnd();
 }
 
 
-/*** Game FSA/FUNCTION fsaStep()
+/*** Game FSA/FUNCTION gameFsaStep()
 ***/
 
-fsaStep = function( eventType , eventTarget ) {
-    console.group( "fsaStep()" );
+gameFsaStep = function( eventType , eventTarget ) {
+    console.group( "gameFsaStep()" );
+    console.logValue( "eventType" , eventType );
+    console.logValue( "eventTarget" , eventTarget );
+    if ( game === undefined ) {
+        console.logValue( "game.status" , undefined );
+        console.logValue( "game.timer" , undefined );
+        console.logValue( "game.questionIndex" , undefined );
+    }
     if ( game !== undefined ) {
         console.logValue( "game.status" , game.status );
         console.logValue( "game.timer" , game.timer );
+        console.logValue( "game.questionIndex" , game.questionIndex );
     }
-    console.logValue( "eventType" , eventType );
-    console.logValue( "eventTarget" , eventTarget );
-    console.logValue( "game" , game );
+    // console.logValue( "game" , game );
 
-    var checkFsaContinue = FSA_CONTINUE__NO;
+    var flagFsaContinue = FSA_CONTINUE__NO;
 
     if ( game === undefined ) {
         game = new Game();
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     if ( game.status === GAME_STATUS__INITIALIZED ) {
         game.status = GAME_STATUS__PROMPT_START;
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     else if ( game.status === GAME_STATUS__PROMPT_START ) {
         gamePromptStart();
         game.status = GAME_STATUS__PROMPT_START__WAIT_USER;
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     else if (
         ( game.status === GAME_STATUS__PROMPT_START__WAIT_USER ) &&
@@ -601,24 +512,24 @@ fsaStep = function( eventType , eventTarget ) {
         ( eventTarget === "game-message" )
     ) {
         game.status = GAME_STATUS__STARTED;
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     else if ( game.status === GAME_STATUS__STARTED ) {
         game.status = GAME_STATUS__MESSAGE_GET_READY;
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     else if ( game.status === GAME_STATUS__MESSAGE_GET_READY ) {
         gameMessageGetReady();
         game.status = GAME_STATUS__MESSAGE_GET_READY__WAIT_TIMEOUT;
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     else if (
         ( game.status === GAME_STATUS__MESSAGE_GET_READY__WAIT_TIMEOUT ) &&
-        ( game.timer === undefined )
+        ( game.timer === null )
     ) {
         gameStartTimer( 3 );
-        checkFsaContinue = FSA_CONTINUE__NO;
         // stop to wait for timeout
+        flagFsaContinue = FSA_CONTINUE__NO;
     }
     else if (
         ( game.status === GAME_STATUS__MESSAGE_GET_READY__WAIT_TIMEOUT ) &&
@@ -626,8 +537,8 @@ fsaStep = function( eventType , eventTarget ) {
         ( game.timer > 1 )
     ) {
         gameStepTimer();
-        checkFsaContinue = FSA_CONTINUE__NO;
         // stop to wait for timeout
+        flagFsaContinue = FSA_CONTINUE__NO;
     }
     else if (
         ( game.status === GAME_STATUS__MESSAGE_GET_READY__WAIT_TIMEOUT ) &&
@@ -636,23 +547,23 @@ fsaStep = function( eventType , eventTarget ) {
     ) {
         gameEndTimer();
         game.status = GAME_STATUS__MESSAGE_GET_READY__TIMEOUT;
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     else if ( game.status === GAME_STATUS__MESSAGE_GET_READY__TIMEOUT ) {
         game.status = GAME_STATUS__PROMPT_QUESTION;
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     else if ( game.status === GAME_STATUS__PROMPT_QUESTION ) {
         gamePromptQuestion();
         game.status = GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT;
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     else if (
         ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) &&
-        ( game.timer === undefined  )
+        ( game.timer === null )
     ) {
         gameStartTimer( 5 );
-        checkFsaContinue = FSA_CONTINUE__NO;
+        flagFsaContinue = FSA_CONTINUE__NO;
         // stop to wait for timeout
     }
     else if (
@@ -661,7 +572,7 @@ fsaStep = function( eventType , eventTarget ) {
         ( game.timer > 1 )
     ) {
         gameStepTimer();
-        checkFsaContinue = FSA_CONTINUE__NO;
+        flagFsaContinue = FSA_CONTINUE__NO;
         // stop to wait for timeout
     }
     else if (
@@ -671,16 +582,16 @@ fsaStep = function( eventType , eventTarget ) {
     ) {
         gameEndTimer();
         game.status = GAME_STATUS__PROMPT_QUESTION__TIMEOUT;
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     else if ( game.status === GAME_STATUS__PROMPT_QUESTION__TIMEOUT ) {
         game.status = GAME_STATUS__MESSAGE_QUESTION_TIMEOUT;
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     else if ( game.status === GAME_STATUS__MESSAGE_QUESTION_TIMEOUT ) {
         gameMessageQuestionTimeout();
         game.status = GAME_STATUS__AFTER_QUESTION__WAIT_TIMEOUT;
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     else if (
         ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) &&
@@ -693,35 +604,35 @@ fsaStep = function( eventType , eventTarget ) {
     ) {
         gameEndTimer();
         game.status = GAME_STATUS__CHECK_CORRECT_ANSWER;
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     else if ( game.status === GAME_STATUS__CHECK_CORRECT_ANSWER  ) {
         var answerIndex = parseInt( eventTarget.split( "game-trivia-answer-" )[1] );
-        var checkCorrectAnswer  = gameCheckCorrectAnswer( answerIndex );
-        if ( checkCorrectAnswer ) {
+        var isCorrectAnswer  = gameIsCorrectAnswer( answerIndex );
+        if ( isCorrectAnswer ) {
             game.status = GAME_STATUS__MESSAGE_GOOD_ANSWER;
         }
         else {
             game.status = GAME_STATUS__MESSAGE_BAD_ANSWER;
         }
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     else if ( game.status === GAME_STATUS__MESSAGE_GOOD_ANSWER ) {
         gameMessageGoodAnswer();
         game.status = GAME_STATUS__AFTER_QUESTION__WAIT_TIMEOUT;
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     else if ( game.status === GAME_STATUS__MESSAGE_BAD_ANSWER ) {
         gameMessageBadAnswer();
         game.status = GAME_STATUS__AFTER_QUESTION__WAIT_TIMEOUT;
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     else if (
         ( game.status === GAME_STATUS__AFTER_QUESTION__WAIT_TIMEOUT ) &&
-        ( game.timer === undefined )
+        ( game.timer === null )
     ) {
         gameStartTimer( 3 );
-        checkFsaContinue = FSA_CONTINUE__NO;
+        flagFsaContinue = FSA_CONTINUE__NO;
         // stop to wait for timeout
     }
     else if (
@@ -730,7 +641,7 @@ fsaStep = function( eventType , eventTarget ) {
         ( game.timer > 1 )
     ) {
         gameStepTimer();
-        checkFsaContinue = FSA_CONTINUE__NO;
+        flagFsaContinue = FSA_CONTINUE__NO;
         // stop to wait for timeout
     }
     else if (
@@ -739,54 +650,254 @@ fsaStep = function( eventType , eventTarget ) {
         ( game.timer === 1 )
     ) {
         gameEndTimer();
+        game.status = GAME_STATUS__AFTER_QUESTION__TIMEOUT;
+        flagFsaContinue = FSA_CONTINUE__YES;
+    }
+    else if ( game.status == GAME_STATUS__AFTER_QUESTION__TIMEOUT ) {
         game.status = GAME_STATUS__CHECK_MORE_QUESTIONS;
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     else if ( game.status === GAME_STATUS__CHECK_MORE_QUESTIONS ) {
-        var checkMoreQuestions = gameCheckMoreQuestions();
-        if ( checkMoreQuestions ) {
+        var flagMoreQuestions = gameCheckMoreQuestions();
+        if ( flagMoreQuestions ) {
             game.status = GAME_STATUS__MESSAGE_GET_READY;
         }
         else {
             game.status = GAME_STATUS__MESSAGE_GAME_OVER;
         }
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     else if ( game.status === GAME_STATUS__MESSAGE_GAME_OVER ) {
         gameMessageGameOver( game.score );
         game.status = GAME_STATUS__MESSAGE_GAME_OVER__WAIT_USER;
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
     else if (
         ( game.status === GAME_STATUS__MESSAGE_GAME_OVER__WAIT_USER ) &&
         ( eventType === "click" ) &&
         ( eventTarget === "game-message" )
-    )
-    {
+    ) {
         game = new Game();
-        checkFsaContinue = FSA_CONTINUE__YES;
+        flagFsaContinue = FSA_CONTINUE__YES;
     }
 
-    console.logValue( "checkFsaContinue" , checkFsaContinue );
+    console.logValue( "flagFsaContinue" , flagFsaContinue );
     console.logValue( "game" , game );
     console.groupEnd();
-    return checkFsaContinue;
+    return flagFsaContinue;
 }
 
 
-/*** Game FSA/FUNCTION fsaMain()
+/*** Game FSA/FUNCTION gameFsaMain()
 ***/
 
-fsaMain = function( eventType , eventTarget ) {
-    console.group( "fsaMain()" );
+gameFsaMain = function( eventType , eventTarget , callbackUpdateUI ) {
+    console.group( "gameFsaMain()" );
     console.logValue( "eventType" , eventType );
     console.logValue( "eventTarget" , eventTarget );
 
     do {
-        var checkFsaContinue = fsaStep( eventType , eventTarget );
-        updateUI();
+        var flagFsaContinue = gameFsaStep( eventType , eventTarget );
+        callbackUpdateUI();
     }
-    while ( checkFsaContinue === FSA_CONTINUE__YES );
+    while ( flagFsaContinue === FSA_CONTINUE__YES );
+
+    console.groupEnd();
+}
+
+
+/*** Update UI/FUNCTION updateUIMessage()
+***/
+
+updateUIMessage = function() {
+    console.group( "FUNCTION updateUIMessage()" );
+
+    // update "#game-message"
+    var gameMessageJQ = $( "#game-message" );
+
+    // update "#game-message"/background color
+    if ( game.status === GAME_STATUS__MESSAGE_GOOD_ANSWER ) {
+        gameMessageJQ.addClass( "alert-success" );
+    }
+    else if ( game.status === GAME_STATUS__MESSAGE_BAD_ANSWER ) {
+        gameMessageJQ.addClass( "alert-danger" )
+    }
+    else if ( game.status === GAME_STATUS__AFTER_QUESTION__TIMEOUT ) {
+        // turn off event colors
+        gameMessageJQ.removeClass( "alert-success alert-danger" );
+    }
+
+    // update "#game-message"/cursor
+    if (
+        ( game.status === GAME_STATUS__PROMPT_START__WAIT_USER ) ||
+        ( game.status === GAME_STATUS__MESSAGE_GAME_OVER__WAIT_USER )
+    ) {
+        gameMessageJQ.css( "cursor" , "pointer" );
+    }
+    else {
+        gameMessageJQ.css( "cursor" , "" );
+    }
+
+    // update "#game-message-header"
+    var gameMessageHeaderJQ = $( "#game-message-header" );
+
+    if ( game.message.header === "" ) {
+        gameMessageHeaderJQ.html( "&nbsp;" );
+    }
+    else {
+        gameMessageHeaderJQ.text( game.message.header );
+    }
+
+    // update "#game-message-body-0"
+    var gameMessageBody0JQ = $( "#game-message-body-0" );
+
+    if ( game.message.body0 === "" ) {
+        gameMessageBody0JQ.html( "&nbsp;" );
+    }
+    else {
+        gameMessageBody0JQ.text( game.message.body0 );
+    }
+
+    if ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) {
+        gameMessageBody0JQ.css( "font-size" , "2rem" );
+    } else {
+        gameMessageBody0JQ.css( "font-size" , "16px" );
+    }
+
+    // update "#game-message-body-1"
+    var gameMessageBody1JQ = $( "#game-message-body-1" );
+
+    if ( game.message.body1 === "" ) {
+        gameMessageBody1JQ.html( "&nbsp;" );
+    }
+    else {
+        gameMessageBody1JQ.text( game.message.body1 );
+    }
+
+    if ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) {
+        gameMessageBody1JQ.addClass( "d-none" );
+    } else {
+        gameMessageBody1JQ.removeClass( "d-none" );
+    }
+
+    console.groupEnd();
+}
+
+
+/*** Update UI/FUNCTION updateUITrivia()
+***/
+
+updateUITrivia = function() {
+    console.group( "FUNCTION updateUITrivia()" );
+
+    // update #game-trivia-answer-0
+    var gameTriviaAnswer0JQ = $( "#game-trivia-answer-0" );
+    if ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) {
+        gameTriviaAnswer0JQ.show();
+        gameTriviaAnswer0JQ.text( game.trivias[ game.triviaIndex ].answers[ 0 ] );
+    }
+    else {
+        gameTriviaAnswer0JQ.hide();
+        gameTriviaAnswer0JQ.html( "&nbsp;" );
+    }
+
+    // update @game-trivia-answer-1
+    var gameTriviaAnswer1JQ =  $( "#game-trivia-answer-1" );
+    if ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) {
+        gameTriviaAnswer1JQ.show();
+        gameTriviaAnswer1JQ.text( game.trivias[ game.triviaIndex ].answers[ 1 ] );
+    }
+    else {
+        gameTriviaAnswer1JQ.hide();
+        gameTriviaAnswer1JQ.html( "&nbsp;" );
+    }
+
+    // update #game-trivia-answer-2
+    var gameTriviaAnswer2JQ = $( "#game-trivia-answer-2" );
+    if ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) {
+        gameTriviaAnswer2JQ.show();
+        gameTriviaAnswer2JQ.text( game.trivias[ game.triviaIndex ].answers[ 2 ] );
+    }
+    else {
+        gameTriviaAnswer2JQ.hide();
+        gameTriviaAnswer2JQ.html( "&nbsp;" );
+    }
+
+    console.groupEnd();
+}
+
+
+/*** Update UI/FUNCTION updateUITimer()
+***/
+
+updateUITimer = function() {
+    console.group( "FUNCTION updateUITimer()" );
+
+    // update "#game-timer"
+    var gameTimerJQ = $( "#game-timer" );
+    gameTimerJQ.removeClass( "alert-primary alert-warning alert-danger" );
+    if (
+        ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) &&
+        ( game.timer === 1 )
+    ) {
+        gameTimerJQ.addClass( "alert-danger" );
+    }
+    else if (
+        ( game.status === GAME_STATUS__PROMPT_QUESTION__WAIT_TIMEOUT ) &&
+        (
+            ( game.timer === 2 ) ||
+            ( game.timer === 3 )
+        )
+    ) {
+        gameTimerJQ.addClass( "alert-warning" );
+    }
+    else {
+        gameTimerJQ.addClass( "alert-primary" );
+
+    }
+
+    // update #game-timer-value
+    var gameTimerValueJQ = $( "#game-timer-value" );
+    if ( game.timer === null ) {
+        gameTimerValueJQ.html( "&nbsp;" );
+    }
+    else {
+        gameTimerValueJQ.text( game.timer.toString() );
+    }
+
+    console.groupEnd();
+}
+
+
+/*** Update UI/FUNCTION updateUIScore()
+***/
+
+updateUIScore = function() {
+    console.group( "FUNCTION updateUIScore()" );
+
+    // update #game-score-value
+    var gameScoreValueJQ = $( "#game-score-value" );
+    if ( game.score === null ) {
+        gameScoreValueJQ.html( "&nbsp;" );
+    }
+    else {
+        gameScoreValueJQ.text( game.score.toString() );
+    }
+
+    console.groupEnd();
+}
+
+
+/*** Update UI/FUNCTION updateUI()
+***/
+
+updateUI = function() {
+    console.group( "FUNCTION updateUI()" );
+
+    updateUIMessage();
+    updateUITimer();
+    updateUITrivia();
+    updateUIScore();
 
     console.groupEnd();
 }
@@ -798,7 +909,7 @@ fsaMain = function( eventType , eventTarget ) {
 handleTimeout = function() {
     console.group( "FUNCTION handleTimeout()" );
 
-    fsaMain( "timeout" , game.timeout );
+    gameFsaMain( "timeout" , game.timeout , updateUI );
 
     console.groupEnd();
 }
@@ -812,7 +923,7 @@ handleClick = function( event ) {
     console.logValue( "event.type" , event.type );
     console.logValue( "event.currentTarget.id" , event.currentTarget.id );
 
-    fsaMain( event.type , event.currentTarget.id );
+    gameFsaMain( event.type , event.currentTarget.id , updateUI );
 
     console.groupEnd();
 }
@@ -835,7 +946,7 @@ handleReady = function( event ) {
     $( "#game-trivia-answer-2" ).on( "click" , handleClick );
 
     // start FSA
-    fsaMain( null , null );
+    gameFsaMain( null , null , updateUI );
 
     console.groupEnd();
 }
